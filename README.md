@@ -1,7 +1,7 @@
 WebWorkeri-swoole
 ========
 
-基于swoole实现的自带http server的web开发框架，用于开发高性能的api应用，例如app接口服务端等。 详细文档见 http://doc.webworker.xtgxiso.com/ 。
+基于swoole实现的自带http server的web开发框架，用于开发高性能的api应用，例如app接口服务端等。 详细文档见 http://doc.webworker.xtgxiso.com/ 
 特性
 ========
 * 仅只支持php7

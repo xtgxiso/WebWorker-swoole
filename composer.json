@@ -1,0 +1,30 @@
+{
+    "name"  : "xtgxiso/webworker-swoole",
+    "type"  : "library",
+    "keywords": ["http", "asynchronous"],
+    "homepage": "https://github.com/xtgxiso/WebWorker-swoole",
+    "license" : "MIT",
+    "description": "An http server PHP framework for easily building fast, scalable network applications.",
+    "authors" : [
+        {
+            "name"      : "xtgxiso",
+            "email"     : "124960772@qq.com",
+            "homepage"  : "http://www.xtgxiso.com",
+            "role": "Developer"
+        }
+    ],
+    "support" : {
+    "email" : "124960772@qq.com",
+        "issues": "https://github.com/xtgxiso/WebWorker-swoole/issues",
+        "wiki"  : "http://doc.webworker.xtgxiso.com/",
+        "source": "https://github.com/xtgxiso/WebWorker-swoole"
+    },
+    "require": {
+    "php": ">=7.0",
+    "ext-swoole": ">=2.0.5"
+    },
+    "autoload": {
+    "psr-4": {"WebWorker\\": "./"}
+    },
+    "minimum-stability":"dev"
+}

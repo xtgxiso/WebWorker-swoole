@@ -31,7 +31,7 @@ class App
     private $_startFile= '';
     private $pidFile = '';
     private $logFile = '';
-    private $set = array();
+    private $set = array('daemonize'=>false);
     private $http_server = false;
 
     private $request = false;
@@ -58,7 +58,7 @@ class App
         }
         // Log file.
         if (empty($this->logFile)) {
-            $this->logFile = __DIR__ . '/app.log';
+            $this->logFile = __DIR__ . '/WebWorker.log';
         }
         $log_file = (string)$this->logFile;
         touch($log_file);
@@ -81,17 +81,16 @@ class App
                 $mode = 'in DEBUG mode';
             }
         }
-        $this->log("App [$start_file] $command1 $mode");
         // Get master process PID.
         $master_pid      = @file_get_contents($this->pidFile);
         $master_is_alive = $master_pid && @posix_kill($master_pid, 0);
         if ($master_is_alive) {
             if ( $command1 === 'start' ) {
-                $this->log("App [$start_file] already running");
+                $this->log("WebWorker [$start_file] already running");
                 exit;
             }
         } elseif ($command1 !== 'start' && $command1 !== 'restart') {
-            $this->log("Workerman[$start_file] not run");
+            $this->log("WebWorker [$start_file] not run");
             exit;
         }
         switch ( $command1 ) {
@@ -99,13 +98,14 @@ class App
                 if ($command2 === '-d') {
                     $this->set['daemonize'] = true;
                 }
+		$this->log("WebWorker [$start_file] $command1 $mode");
                 break;
             case 'status':
                 exit(0);
             case 'restart':
             case 'stop':
-                $this->log("App [$start_file] is stoping ...");
-                $master_pid && posix_kill($master_pid, SIGINT);
+                $this->log("WebWorker [$start_file] is stoping ...");
+                $master_pid && posix_kill($master_pid,SIGTERM);
                 $timeout    = 5;
                 $start_time = time();
                 // Check master process is still alive?
@@ -114,7 +114,7 @@ class App
                     if ($master_is_alive) {
                         // Timeout?
                         if (time() - $start_time >= $timeout) {
-                            $this->log("App [$start_file] stop fail");
+                            $this->log("WebWorker [$start_file] stop fail");
                             exit;
                         }
                         // Waiting amoment.
@@ -122,7 +122,7 @@ class App
                         continue;
                     }
                     // Stop success.
-                    $this->log("Workerman[$start_file] stop success");
+                    $this->log("WebWorker [$start_file] stop success");
                     if ($command1 === 'stop') {
                         exit(0);
                     }
@@ -134,7 +134,7 @@ class App
                 break;
             case 'reload':
                 posix_kill($master_pid, SIGUSR1);
-                self::log("App [$start_file] reload");
+                self::log("WebWorker [$start_file] reload");
                 exit;
             default :
                 exit("Usage: php yourfile.php {start|stop|restart|reload|status}\n");
@@ -153,7 +153,9 @@ class App
 
     protected function log($msg){
         $msg = $msg . "\n";
-        echo($msg);
+	if ( isset($this->set['daemonize']) && !$this->set['daemonize'] ){
+        	echo($msg);
+	}
     }
 
     public function HandleFunc($url,callable $callback){
@@ -275,13 +277,3 @@ EOD;
     }
 
 }
-
-
-$app = new App();
-
-//注册路由hello
-$app->HandleFunc("/hello",function() {
-    $this->ServerHtml("Hello World");
-});
-
-$app->run();

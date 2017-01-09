@@ -36,7 +36,12 @@ class App
     private $logFile = '';
     private $set = array('daemonize'=>false);
     private $http_server = false;
-
+    
+    private $_statisticsFile = "";
+    protected $_globalStatistics = array(
+        'start_timestamp'  => 0,
+    );
+    
     private $request = false;
     private $response = false;
 
@@ -66,6 +71,10 @@ class App
         $log_file = (string)$this->logFile;
         touch($log_file);
         chmod($log_file, 0622);
+
+	$this->_globalStatistics['start_timestamp'] = time();
+        $this->_statisticsFile = sys_get_temp_dir() . '/WebWorker.status';
+
     }
 
     protected function parseCommand(){
@@ -104,6 +113,12 @@ class App
 		$this->log("WebWorker [$start_file] $command1 $mode");
                 break;
             case 'status':
+		if (is_file($this->_statisticsFile)) {
+                    @unlink($this->_statisticsFile);
+                }
+		$this->writeStatisticsToStatusFile();
+		usleep(100000);
+                @readfile($this->_statisticsFile);
                 exit(0);
             case 'restart':
             case 'stop':
@@ -160,6 +175,18 @@ class App
 	if ( isset($this->set['daemonize']) && !$this->set['daemonize'] ){
         	echo($msg);
 	}
+    }
+
+    protected function writeStatisticsToStatusFile(){
+	
+	$loadavg = sys_getloadavg();
+        file_put_contents($this->_statisticsFile,"---------------------------------------GLOBAL STATUS--------------------------------------------\n");
+        file_put_contents($this->_statisticsFile,'WebWorker version:' . App::VERSION . "          PHP version:" . PHP_VERSION . "\n", FILE_APPEND);
+        file_put_contents($this->_statisticsFile, 'start time:' . date('Y-m-d H:i:s',
+                    $this->_globalStatistics['start_timestamp']) . '   run ' . floor((time() - $this->_globalStatistics['start_timestamp']) / (24 * 60 * 60)) . ' days ' . floor(((time() - $this->_globalStatistics['start_timestamp']) % (24 * 60 * 60)) / (60 * 60)) . " hours   \n",FILE_APPEND);
+        $load_str = 'load average: ' . implode(", ", $loadavg);
+	file_put_contents($this->_statisticsFile,
+                str_pad($load_str, 33) . "\n", FILE_APPEND);
     }
 
     public function HandleFunc($url,callable $callback){

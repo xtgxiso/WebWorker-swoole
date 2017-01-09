@@ -25,8 +25,11 @@ class App
     const VERSION = '0.1.0';
 
     private $map = array();
+
     public  $autoload = array();
     public  $on404 ="";
+    public  $name = "none";    
+    public  $count = 0;
 
     private $_startFile= '';
     private $pidFile = '';
@@ -145,6 +148,7 @@ class App
         if (false === @file_put_contents($this->pidFile,$serv->master_pid )) {
             throw new Exception('can not save pid to ' . $this->pidFile);
         }
+	swoole_set_process_name("Webworker: master process ".$this->name. " start_file=".$this->_startFile);	
     }
 
     public function onWorkerStart($serv){

@@ -57,11 +57,11 @@ class App
         $this->_startFile = $backtrace[count($backtrace) - 1]['file'];
         // Pid file.
         if (empty($this->pidFile)) {
-            $this->pidFile = __DIR__ . "/" . str_replace('/', '_', $this->_startFile) . ".pid";
+            $this->pidFile = getcwd() . "/" . str_replace('/', '_', $this->_startFile) . ".pid";
         }
         // Log file.
         if (empty($this->logFile)) {
-            $this->logFile = __DIR__ . '/WebWorker.log';
+            $this->logFile = getcwd() . '/WebWorker.log';
         }
         $log_file = (string)$this->logFile;
         touch($log_file);

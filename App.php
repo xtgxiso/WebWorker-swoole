@@ -47,6 +47,7 @@ class App
 	$this->set['log_file'] = $this->logFile;
         $this->http_server->set($this->set);
         $this->http_server->on('start', array($this, 'onMasterStart'));
+	$this->http_server->on('shutdown', array($this, 'onShutdown'));
         $this->http_server->on('workerstart', array($this, 'onWorkerStart'));
         $this->http_server->on('request', array($this, 'onClientMessage'));
     }
@@ -146,6 +147,10 @@ class App
             throw new Exception('can not save pid to ' . $this->pidFile);
         }
 	swoole_set_process_name("Webworker: master process ".$this->name. " start_file=".$this->_startFile);	
+    }
+
+    public function onShutdown($serv){
+	unlink($this->pidFile);
     }
 
     public function onWorkerStart($serv){

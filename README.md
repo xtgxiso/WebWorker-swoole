@@ -81,6 +81,15 @@ $app->on404  = function() {
 $app->run();
 ```
 
+命令
+========
+
+```
+php demo.php start 
+php demo.php start -d
+php demo.php reload
+php demo.php restart
+```
 
 技术交流QQ群
 ========

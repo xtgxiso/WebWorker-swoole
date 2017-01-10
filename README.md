@@ -4,7 +4,7 @@ WebWorker-swoole
 基于swoole实现的自带http server的web开发框架，用于开发高性能的api应用，例如app接口服务端等。 详细文档见 http://doc.webworker.xtgxiso.com/ 
 特性
 ========
-* 仅只支持php7
+* 仅只支持php7以上
 * 天生继承swoole所拥有的特性
 * 只实现了简单路由功能的小巧框架,便于开发者使用和扩展.demo1中只是目录示例，开发者可自行定义自己的应用目录结构
 * 相比php-fpm或mod_php的方式性能有几十倍左右的提升

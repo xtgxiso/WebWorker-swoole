@@ -48,6 +48,7 @@ class App
         $this->http_server->set($this->set);
         $this->http_server->on('start', array($this, 'onMasterStart'));
 	$this->http_server->on('shutdown', array($this, 'onShutdown'));
+	$this->http_server->on('managerstart', array($this, 'onManagerStart'));
         $this->http_server->on('workerstart', array($this, 'onWorkerStart'));
         $this->http_server->on('request', array($this, 'onClientMessage'));
     }
@@ -153,7 +154,12 @@ class App
 	unlink($this->pidFile);
     }
 
+    public function onManagerStart($serv){
+	swoole_set_process_name("Webworker: manage process ".$this->name. " start_file=".$this->_startFile);	
+    }
+
     public function onWorkerStart($serv){
+	swoole_set_process_name("Webworker: worker process ".$this->name. " start_file=".$this->_startFile);
         autoload_dir($this->autoload);
     }
 

@@ -37,11 +37,6 @@ class App
     private $set = array('daemonize'=>false);
     private $http_server = false;
     
-    private $_statisticsFile = "";
-    protected $_globalStatistics = array(
-        'start_timestamp'  => 0,
-    );
-    
     private $request = false;
     private $response = false;
 
@@ -49,6 +44,7 @@ class App
         $this->init();
         $this->parseCommand();
         $this->http_server = new \swoole_http_server($ip,$port);
+	$this->set['log_file'] = $this->logFile;
         $this->http_server->set($this->set);
         $this->http_server->on('start', array($this, 'onMasterStart'));
         $this->http_server->on('workerstart', array($this, 'onWorkerStart'));
@@ -71,17 +67,13 @@ class App
         $log_file = (string)$this->logFile;
         touch($log_file);
         chmod($log_file, 0622);
-
-	$this->_globalStatistics['start_timestamp'] = time();
-        $this->_statisticsFile = sys_get_temp_dir() . '/WebWorker.status';
-
     }
 
     protected function parseCommand(){
         global $argv;
         $start_file = $argv[0];
         if (!isset($argv[1])) {
-            exit("Usage: php yourfile.php {start|stop|restart|reload|status}\n");
+            exit("Usage: php yourfile.php {start|stop|restart|reload}\n");
         }
         $command1  = trim($argv[1]);
         $command2 = isset($argv[2]) ? $argv[2] : '';
@@ -112,14 +104,6 @@ class App
                 }
 		$this->log("WebWorker [$start_file] $command1 $mode");
                 break;
-            case 'status':
-		if (is_file($this->_statisticsFile)) {
-                    @unlink($this->_statisticsFile);
-                }
-		$this->writeStatisticsToStatusFile();
-		usleep(100000);
-                @readfile($this->_statisticsFile);
-                exit(0);
             case 'restart':
             case 'stop':
                 $this->log("WebWorker [$start_file] is stoping ...");
@@ -144,9 +128,7 @@ class App
                     if ($command1 === 'stop') {
                         exit(0);
                     }
-                    if ($command2 === '-d') {
-                        $this->set['daemonize'] = true;
-                    }
+                    $this->set['daemonize'] = true;
                     break;
                 }
                 break;
@@ -175,18 +157,6 @@ class App
 	if ( isset($this->set['daemonize']) && !$this->set['daemonize'] ){
         	echo($msg);
 	}
-    }
-
-    protected function writeStatisticsToStatusFile(){
-	
-	$loadavg = sys_getloadavg();
-        file_put_contents($this->_statisticsFile,"---------------------------------------GLOBAL STATUS--------------------------------------------\n");
-        file_put_contents($this->_statisticsFile,'WebWorker version:' . App::VERSION . "          PHP version:" . PHP_VERSION . "\n", FILE_APPEND);
-        file_put_contents($this->_statisticsFile, 'start time:' . date('Y-m-d H:i:s',
-                    $this->_globalStatistics['start_timestamp']) . '   run ' . floor((time() - $this->_globalStatistics['start_timestamp']) / (24 * 60 * 60)) . ' days ' . floor(((time() - $this->_globalStatistics['start_timestamp']) % (24 * 60 * 60)) / (60 * 60)) . " hours   \n",FILE_APPEND);
-        $load_str = 'load average: ' . implode(", ", $loadavg);
-	file_put_contents($this->_statisticsFile,
-                str_pad($load_str, 33) . "\n", FILE_APPEND);
     }
 
     public function HandleFunc($url,callable $callback){

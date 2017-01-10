@@ -8,7 +8,6 @@ WebWorker-swoole
 * 天生继承swoole所拥有的特性
 * 只实现了简单路由功能的小巧框架,便于开发者使用和扩展.demo1中只是目录示例，开发者可自行定义自己的应用目录结构
 * 相比php-fpm或mod_php的方式性能有几十倍左右的提升
-* 自带简单的单例redis操作类和单例mysqli操作类(支持自动重连)
 * 可设置自动加载目录加载目录下的所有php文件(仅一级不支持递归)
 * 自定义404响应
 * 支持中间件
@@ -75,44 +74,11 @@ $app->HandleFunc("/input",function() {
      $this->ServerHtml($body);
 });
 
-$config = array();
-$config["redis"]["host"] = "127.0.0.1";
-$config["redis"]["port"] = 6379;
-$config["redis"]["password"] = "123456";
-$config["redis"]["db"] = 1;
-$config["db"]["host"] = "127.0.0.1";
-$config["db"]["user"] = "root";
-$config["db"]["password"] = "123456";
-$config["db"]["db"] = "test";
-$config["db"]["port"] = 3306;
-$config["db"]["charset"] = "utf8";
-
-//redis示例
-$app->HandleFunc("/redis",function() use($app,$config){
-     $redis = Mredis::getInstance($config["redis"]);
-     $app->ServerHtml($redis->get("xtgxiso"));
-});
-
-//mysql示例
-$app->HandleFunc("/mysql",function() use($app,$config){
-     $db = Mdb::getInstance($config["db"]);
-     $list = $db->query("select * from test")->fetch_all(MYSQLI_ASSOC);
-     $app->ServerJson($list);
-});
-
-//自定义404
 $app->on404  = function() {
     $this->ServerHtml("我的404");
 };
 
-// 如果不是在根目录启动，则运行runAll方法
-if(!defined('GLOBAL_START'))
-{
-    Worker::runAll();
-}
-
-// Run worker
-Worker::runAll();
+$app->run();
 ```
 
 

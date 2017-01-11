@@ -40,7 +40,7 @@ $app->autoload = array();
 
 //应用级中间件--对所有访问启用ip限制访问
 $app->AddFunc("/",function() {
-    if ( $_SERVER['REMOTE_ADDR'] != '127.0.0.1' ) {
+    if ( $this->request->server['remote_addr'] != '127.0.0.1' ) {
         $this->ServerHtml("禁止访问");
         return true;//返回ture,中断执行后面的路由或中间件，直接返回给浏览器
     }   
@@ -60,7 +60,7 @@ $app->HandleFunc("/json",function() {
 //注册路由input
 $app->HandleFunc("/input",function() {
     //获取body
-     $body = $GLOBALS['HTTP_RAW_POST_DATA'];
+     $body = $this->request->rawContent();
      $this->ServerHtml($body);
 });
 

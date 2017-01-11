@@ -50,6 +50,7 @@ class App
 	$this->http_server->on('shutdown', array($this, 'onShutdown'));
 	$this->http_server->on('managerstart', array($this, 'onManagerStart'));
         $this->http_server->on('workerstart', array($this, 'onWorkerStart'));
+        $this->http_server->on('workererror', array($this, 'onWorkerError'));
         $this->http_server->on('request', array($this, 'onClientMessage'));
     }
 
@@ -163,11 +164,17 @@ class App
         autoload_dir($this->autoload);
     }
 
+    public function onWorkerError($serv,$worker_id,$worker_pid,$exit_code){
+	$this->log("worker_pid: ".$worker_pid." exit_code:".$exit_code);        
+    }
+
     protected function log($msg){
-        $msg = $msg . "\n";
+        $msg = date('Y-m-d H:i:s')." ".$msg . "\n";
 	if ( isset($this->set['daemonize']) && !$this->set['daemonize'] ){
-        	echo($msg);
-	}
+            echo($msg);
+	}else{
+	    file_put_contents($this->logFile,$msg, FILE_APPEND | LOCK_EX);    	
+        }
     }
 
     public function HandleFunc($url,callable $callback){
@@ -263,9 +270,10 @@ EOD;
             }catch (\Exception $e) {
                 // Jump_exit?
                 if ($e->getMessage() != 'jump_exit') {
-                    echo $e;
+                    $this->log($e);
                 }
                 $code = $e->getCode() ? $e->getCode() : 500;
+		$this->log($e);
             }
         }else{
             $this->show_404();

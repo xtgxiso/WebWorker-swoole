@@ -136,10 +136,10 @@ class App
                 break;
             case 'reload':
                 posix_kill($master_pid, SIGUSR1);
-                self::log("WebWorker [$start_file] reload");
+                self::log("WebWorker [$start_file] reload success");
                 exit;
             default :
-                exit("Usage: php yourfile.php {start|stop|restart|reload|status}\n");
+                exit("Usage: php yourfile.php {start|stop|restart|reload}\n");
         }
     }
 

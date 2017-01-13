@@ -207,7 +207,7 @@ class App
 
     private function show_404(){
         if ( $this->on404 ){
-	   $callback = \Closure::bind($this->on404, $this, get_class());
+	    $callback = \Closure::bind($this->on404, $this, get_class());
             call_user_func($callback);
         }else{
             $this->response->status(404);

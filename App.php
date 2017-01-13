@@ -207,7 +207,8 @@ class App
 
     private function show_404(){
         if ( $this->on404 ){
-            call_user_func($this->on404);
+	   $callback = \Closure::bind($this->on404, $this, get_class());
+            call_user_func($callback);
         }else{
             $this->response->status(404);
             $html = '<html>
@@ -251,6 +252,7 @@ EOD;
             if ( $route[2] == 1){//正常路由
                 if ( $route[0] == $url ){
                     $callback[] = $route[1];
+		    $success = true;
                 }
             }else if ( $route[2] == 2 ){//中间件
                 if ( $route[0] == "/" ){
@@ -267,6 +269,9 @@ EOD;
                         break;
                     }
                 }
+		if ( !$success ){
+		    $this->show_404();
+		}
             }catch (\Exception $e) {
                 // Jump_exit?
                 if ($e->getMessage() != 'jump_exit') {

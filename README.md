@@ -48,7 +48,7 @@ $app->AddFunc("/",function() {
 
 //注册路由hello
 $app->HandleFunc("/hello",function() {
-    $this->ServerHtml("Hello World WorkerMan WebWorker!");
+    $this->ServerHtml("Hello World");
 });
 
 //注册路由json

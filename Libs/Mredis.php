@@ -17,7 +17,7 @@ class Mredis{
         $password = isset($config["password"]) ? $config["password"] : "";
         $db = isset($config["db"]) ? $config["db"] : 0;
 	if ( $config['coroutine'] ){
-	    $redis = new Swoole\Coroutine\Redis();
+	    $redis = new \Swoole\Coroutine\Redis();
  	    $redis->connect($host,$port);
 	    if ( $password ){
                 $redis->auth($password);

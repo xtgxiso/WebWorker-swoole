@@ -64,6 +64,21 @@ $app->HandleFunc("/input",function() {
      $this->ServerHtml($body);
 });
 
+//注册路由redis
+$app->HandleFunc("/redis",function() {
+    $config = array();
+    $config["redis"]["host"] = "127.0.0.1";
+    $config["redis"]["port"] = 6379;
+    $config["redis"]["password"] = "123456";
+    $config["redis"]["db"] = 1; 
+    //是否启用协程库来操作redis
+    $config["redis"]["coroutine"] = true;
+    $redis =  WebWorker\Libs\Mredis::getInstance($config['redis']); 
+    $redis->set("xtgxiso",time());
+    $str = $redis->get("xtgxiso");
+    $this->ServerHtml($str);
+});
+
 $app->on404  = function() {
     $this->ServerHtml("我的404");
 };

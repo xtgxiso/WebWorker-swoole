@@ -72,9 +72,9 @@ $app->HandleFunc("/redis",function() {
     $config["redis"]["password"] = "123456";
     $config["redis"]["db"] = 1; 
     //是否启用协程库来操作redis
-    $config["redis"]["coroutine"] = true;
+    $config["redis"]["coroutine"] = $this->request->get['coroutine'];
     $redis =  WebWorker\Libs\Mredis::getInstance($config['redis']); 
-    $redis->set("xtgxiso",time());
+    $redis->set("xtgxiso",time()."-".$config["redis"]["coroutine"]);
     $str = $redis->get("xtgxiso");
     $this->ServerHtml($str);
 });

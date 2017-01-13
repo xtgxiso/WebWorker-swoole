@@ -22,8 +22,9 @@ class Mredis{
 	    if ( $password ){
                 $redis->auth($password);
 		$redis->select($db);
-		return $redis;
-            } 
+            }
+	    $redis->select($db);
+	    return $redis; 
 	}else{
             $key = md5(implode(":",$config));
             if (!isset(self::$_instance[$key])) {

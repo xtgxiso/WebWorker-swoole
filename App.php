@@ -158,6 +158,7 @@ class App
 
     public function onWorkerStart($serv){
 	swoole_set_process_name("Webworker: worker process ".$this->name. " start_file=".$this->_startFile);
+	$this->autoload[] = __DIR__."/Libs/";
         autoload_dir($this->autoload);
     }
 

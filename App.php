@@ -195,7 +195,7 @@ class App
         $this->map[] = array($url,$callback,2);
     }
 
-    private function show_404(){
+    private function show_404($request,$response){
         if ( $this->on404 ){
             $bc_c1 = \Closure::bind($this->on404, new \WebWorker\Libs\Controller($request, $response), '\WebWorker\Libs\Controller');
 	    $bc_c1();
@@ -260,7 +260,7 @@ EOD;
                     }
                 }
 		if ( !$success ){
-		    $this->show_404();
+		    $this->show_404($request, $response);
 		}
             }catch (\Exception $e) {
                 // Jump_exit?
@@ -271,7 +271,7 @@ EOD;
 		$this->log($e);
             }
         }else{
-            $this->show_404();
+            $this->show_404($request, $response);
         }
     }
 

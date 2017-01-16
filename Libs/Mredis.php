@@ -21,7 +21,6 @@ class Mredis{
  	    $redis->connect($host,$port);
 	    if ( $password ){
                 $redis->auth($password);
-		$redis->select($db);
             }
 	    $redis->select($db);
 	    return $redis; 

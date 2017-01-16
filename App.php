@@ -183,7 +183,7 @@ class App
         }
         if ( is_callable($callback) ){
             if ( $callback instanceof \Closure ){
-                $callback = \Closure::bind($callback, $this, get_class());
+                //$callback = \Closure::bind($callback, $this, get_class());
             }
         }else{
             throw new \Exception('can not HandleFunc');
@@ -197,7 +197,7 @@ class App
         }
         if ( is_callable($callback) ){
             if ( $callback instanceof \Closure ){
-                $callback = \Closure::bind($callback, $this, get_class());
+                //$callback = \Closure::bind($callback, $this, get_class());
             }
         }else{
             throw new \Exception('can not HandleFunc');
@@ -207,7 +207,7 @@ class App
 
     private function show_404(){
         if ( $this->on404 ){
-	    $callback = \Closure::bind($this->on404, $this, get_class());
+	    //$callback = \Closure::bind($this->on404, $this, get_class());
             call_user_func($callback);
         }else{
             $this->response->status(404);
@@ -231,11 +231,10 @@ class App
 });</pre>
 </div>
 EOD;
-            $this->ServerHtml($str);
+            $controller = new  WebWorker\Libs\Controller($request,$response);
+	    $controller->ServerHtml($str);
             return;
         }
-        $this->request = $request;
-        $this->response = $response;
         $url= $request->server["request_uri"];
         $pos = stripos($url,"?");
         if ($pos != false) {
@@ -265,7 +264,8 @@ EOD;
         if ( isset($callback) ){
             try {
                 foreach($callback as $cl){
-                    if ( call_user_func($cl) === true){
+		    $bc_c1 = \Closure::bind($cl, new \WebWorker\Libs\Controller($request, $response), '\WebWorker\Libs\Controller');
+                    if ( $bc_c1() === true){
                         break;
                     }
                 }
@@ -285,16 +285,6 @@ EOD;
             $code = 404;
             $msg = "class $class not found";
         }
-    }
-
-    public function  ServerJson($data){
-        $this->response->header('Content-Type', 'application/json');
-        $this->response->end(json_encode($data));
-    }
-
-    public function  ServerHtml($data){
-        $this->response->header("Content-Type", "text/html; charset=utf-8");
-        $this->response->end($data);
     }
 
     public function run(){

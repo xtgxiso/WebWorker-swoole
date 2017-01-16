@@ -29,6 +29,11 @@ class Mredis{
             if (!isset(self::$_instance[$key])) {
                 self::$_instance[$key] = new \Redis();
                 self::$_instance[$key]->connect($host,$port);
+		if (self::$_instance[$key] == false) {
+                    unset(self::$_instance[$key]);
+		    trigger_error("redis connect fail!", E_USER_ERROR); 
+                    return false;
+                }
                 if ( $password ){
                     self::$_instance[$key]->auth($password);
                 }

@@ -65,6 +65,9 @@ $app->HandleFunc("/input",function() {
      $this->ServerHtml($body);
 });
 
+$count = 0;
+$pool = new SplQueue();
+
 //注册路由redis
 $app->HandleFunc("/redis",function() {
     $config = array();
@@ -74,10 +77,22 @@ $app->HandleFunc("/redis",function() {
     $config["redis"]["db"] = 1; 
     //是否启用协程库来操作redis
     $config["redis"]["coroutine"] = $this->request->get['coroutine'];
-    $redis =  WebWorker\Libs\Mredis::getInstance($config['redis']); 
+    if ( $config["redis"]["coroutine"] ){
+        if (count($pool) == 0) {
+            $redis =  WebWorker\Libs\Mredis::getInstance($config['redis']);
+            $pool->push($redis);
+            $count++;
+        }
+        $redis = $pool->pop();
+    }else{
+        $redis =  WebWorker\Libs\Mredis::getInstance($config['redis']); 
+    }
     $redis->set("xtgxiso",time()."-".$config["redis"]["coroutine"]);
     $str = $redis->get("xtgxiso");
     $this->ServerHtml($str);
+    if ( $config["redis"]["coroutine"] ){
+        $pool->push($redis);
+    }
 });
 
 $app->on404  = function() {

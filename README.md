@@ -69,7 +69,7 @@ $count = 0;
 $pool = new SplQueue();
 
 //注册路由redis
-$app->HandleFunc("/redis",function() {
+$app->HandleFunc("/redis",function() use($count,$pool) {
     $config = array();
     $config["redis"]["host"] = "127.0.0.1";
     $config["redis"]["port"] = 6379;

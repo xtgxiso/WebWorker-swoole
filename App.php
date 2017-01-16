@@ -36,9 +36,6 @@ class App
     private $logFile = '';
     private $set = array('daemonize'=>false);
     private $http_server = false;
-    
-    private $request = false;
-    private $response = false;
 
     public function __construct($ip='0.0.0.0', $port=1215){
         $this->init();
@@ -181,11 +178,7 @@ class App
         if ( $url != "/" ){
             $url = strtolower(trim($url,"/"));
         }
-        if ( is_callable($callback) ){
-            if ( $callback instanceof \Closure ){
-                //$callback = \Closure::bind($callback, $this, get_class());
-            }
-        }else{
+        if ( !is_callable($callback) ){
             throw new \Exception('can not HandleFunc');
         }
         $this->map[] = array($url,$callback,1);
@@ -195,11 +188,7 @@ class App
         if ( $url != "/" ){
             $url = strtolower(trim($url,"/"));
         }
-        if ( is_callable($callback) ){
-            if ( $callback instanceof \Closure ){
-                //$callback = \Closure::bind($callback, $this, get_class());
-            }
-        }else{
+        if ( !is_callable($callback) ){
             throw new \Exception('can not HandleFunc');
         }
         $this->map[] = array($url,$callback,2);
@@ -207,10 +196,9 @@ class App
 
     private function show_404(){
         if ( $this->on404 ){
-	    //$callback = \Closure::bind($this->on404, $this, get_class());
-            call_user_func($callback);
+            $bc_c1 = \Closure::bind($this->on404, new \WebWorker\Libs\Controller($request, $response), '\WebWorker\Libs\Controller');
+	    $bc_c1();
         }else{
-            $this->response->status(404);
             $html = '<html>
                 <head><title>404 Not Found</title></head>
                 <body bgcolor="white">
@@ -218,7 +206,8 @@ class App
                 <hr><center>App</center>
                 </body>
                 </html>';
-            $this->response->end($html);
+	    $controller = new  WebWorker\Libs\Controller($request,$response);
+	    $controller->ServerHtml($str);
         }
     }
 
@@ -282,8 +271,6 @@ EOD;
             }
         }else{
             $this->show_404();
-            $code = 404;
-            $msg = "class $class not found";
         }
     }
 

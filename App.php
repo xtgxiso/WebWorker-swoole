@@ -207,8 +207,8 @@ class App
                 <hr><center>App</center>
                 </body>
                 </html>';
-	    $controller = new  WebWorker\Libs\Controller($request,$response);
-	    $controller->ServerHtml($str);
+	    $controller = new  \WebWorker\Libs\Controller($request,$response);
+	    $controller->ServerHtml($html);
         }
     }
 
@@ -221,7 +221,7 @@ class App
 });</pre>
 </div>
 EOD;
-            $controller = new  WebWorker\Libs\Controller($request,$response);
+            $controller = new  \WebWorker\Libs\Controller($request,$response);
 	    $controller->ServerHtml($str);
             return;
         }

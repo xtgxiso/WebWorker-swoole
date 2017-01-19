@@ -44,8 +44,10 @@ class Controller{
     
     public function __destruct() {
         global $config;
-        if ( $this->redis && $config["redis"]["coroutine_pool"] ){
-            $config["redis"]["coroutine_pool"]->push($this->redis);
+        if ( $this->redis && isset($config["redis"]["coroutine_pool"]) ){
+	    if ( is_a($config["redis"]["coroutine_pool"],'SplQueue') ){    
+                $config["redis"]["coroutine_pool"]->push($this->redis);
+	    }
         }
     }
 

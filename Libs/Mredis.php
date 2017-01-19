@@ -28,6 +28,7 @@ class Mredis{
 	    $redis->select($db);
 	    return $redis; 
 	}else{
+	    unset($config["coroutine_pool"]);
             $key = md5(implode(":",$config));
             if (!isset(self::$_instance[$key])) {
                 self::$_instance[$key] = new \Redis();

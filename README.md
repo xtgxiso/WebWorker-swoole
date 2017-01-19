@@ -81,7 +81,7 @@ $config["redis"]["coroutine_pool"] = new SplQueue();
 
 //注册路由redis
 $app->HandleFunc("/redis",function() {
-    $this->redis->set("xtgxiso",time()."-".$config["redis"]["coroutine"]);
+    $this->redis->set("xtgxiso",time());
     $str = $this->redis->get("xtgxiso");
     $this->ServerHtml($str);
 });

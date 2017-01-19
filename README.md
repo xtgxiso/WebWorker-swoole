@@ -65,34 +65,25 @@ $app->HandleFunc("/input",function() {
      $this->ServerHtml($body);
 });
 
-$count = 0;
-$pool = new SplQueue();
+$config = array();
+$config["redis"]["host"] = "127.0.0.1";
+$config["redis"]["port"] = 6379;
+$config["redis"]["password"] = "123456";
+$config["redis"]["db"] = 1;
+//是否自动初始化连接
+$config["redis"]["load"] = 1;
+//是否启用协程redis库
+$config["redis"]["coroutine"] = 1;
+//记录redis连接池数量
+$config["redis"]["coroutine_count"] = 0;
+//存放所有的redis连接
+$config["redis"]["coroutine_pool"] = new SplQueue();
 
 //注册路由redis
-$app->HandleFunc("/redis",function() use($count,$pool) {
-    $config = array();
-    $config["redis"]["host"] = "127.0.0.1";
-    $config["redis"]["port"] = 6379;
-    $config["redis"]["password"] = "123456";
-    $config["redis"]["db"] = 1; 
-    //是否启用协程库来操作redis
-    $config["redis"]["coroutine"] = $this->request->get['coroutine'];
-    if ( $config["redis"]["coroutine"] ){
-        if (count($pool) == 0) {
-            $redis =  WebWorker\Libs\Mredis::getInstance($config['redis']);
-            $pool->push($redis);
-            $count++;
-        }
-        $redis = $pool->pop();
-    }else{
-        $redis =  WebWorker\Libs\Mredis::getInstance($config['redis']); 
-    }
-    $redis->set("xtgxiso",time()."-".$config["redis"]["coroutine"]);
-    $str = $redis->get("xtgxiso");
+$app->HandleFunc("/redis",function() {
+    $this->redis->set("xtgxiso",time()."-".$config["redis"]["coroutine"]);
+    $str = $this->redis->get("xtgxiso");
     $this->ServerHtml($str);
-    if ( $config["redis"]["coroutine"] ){
-        $pool->push($redis);
-    }
 });
 
 $app->on404  = function() {

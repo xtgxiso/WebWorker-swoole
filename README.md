@@ -86,6 +86,23 @@ $app->HandleFunc("/redis",function() {
     $this->ServerHtml($str);
 });
 
+$config['db']['host'] = "127.0.0.1";
+$config['db']['user'] = "root";
+$config['db']['password'] = "123456";
+$config['db']['database'] = "test";
+$config['db']['port'] = 3306;
+$config['db']['charset'] = "utf8";
+$config["db"]["load"] = 1;
+$config["db"]["coroutine"] = 1;
+$config["db"]["coroutine_count"] = 0;
+$config["db"]["coroutine_pool"] = new SplQueue();
+
+//注册路由mysql
+$app->HandleFunc("/mysql",function() {
+    $res = $this->db->query("select * from test where id =2");
+    $this->ServerJson($res);
+});
+
 $app->on404  = function() {
     $this->ServerHtml("我的404");
 };

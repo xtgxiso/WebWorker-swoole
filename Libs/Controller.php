@@ -7,6 +7,7 @@ class Controller{
     public $response = false; 
 
     private $redis = false;
+    private $db = false;
 
     function __construct($request,$response) {
         global $config;
@@ -15,6 +16,9 @@ class Controller{
         if ( $config["redis"]["load"] ) {
             $this->LoadRedis();
         }
+	if ( $config["db"]["load"] ){
+	    $this->LoadDb();
+	}
     }
 
     private function LoadRedis(){
@@ -29,6 +33,20 @@ class Controller{
 	}else{
 	    $this->redis = \WebWorker\Libs\Mredis::getInstance($config['redis']); 
 	}
+    }
+
+    private function LoadDb(){
+	global $config;
+	if ( $config["db"]["coroutine"] ){
+            if (count($config["db"]["coroutine_pool"]) == 0) {
+                $redis =  \WebWorker\Libs\Mredis::getInstance($config['redis']);
+                $config["redis"]["coroutine_pool"]->push($redis);
+                $config["redis"]["coroutine_count"]++;
+            }
+            $this->db =  $config["redis"]["coroutine_pool"]->pop();
+        }else{
+            $this->db = new \WebWorker\Libs\Mmysqli($config['db']); 
+        }        
     }
 
     public function  ServerJson($data){
@@ -48,6 +66,12 @@ class Controller{
 	    if ( is_a($config["redis"]["coroutine_pool"],'SplQueue') ){    
                 $config["redis"]["coroutine_pool"]->push($this->redis);
 	    }
+        }
+	global $config;
+        if ( $this->db && isset($config["db"]["coroutine_pool"]) ){
+            if ( is_a($config["db"]["coroutine_pool"],'SplQueue') ){
+                $config["db"]["coroutine_pool"]->push($this->db);
+            }
         }
     }
 

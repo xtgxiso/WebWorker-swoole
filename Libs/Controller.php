@@ -39,11 +39,11 @@ class Controller{
 	global $config;
 	if ( $config["db"]["coroutine"] ){
             if (count($config["db"]["coroutine_pool"]) == 0) {
-                $redis =  \WebWorker\Libs\Mredis::getInstance($config['redis']);
-                $config["redis"]["coroutine_pool"]->push($redis);
-                $config["redis"]["coroutine_count"]++;
+                $db =  new \WebWorker\Libs\CoroutineMysql($config["db"]);
+                $config["db"]["coroutine_pool"]->push($db);
+                $config["db"]["coroutine_count"]++;
             }
-            $this->db =  $config["redis"]["coroutine_pool"]->pop();
+            $this->db =  $config["db"]["coroutine_pool"]->pop();
         }else{
             $this->db = new \WebWorker\Libs\Mmysqli($config['db']); 
         }        

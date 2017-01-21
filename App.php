@@ -37,11 +37,15 @@ class App
     private $set = array('daemonize'=>false);
     private $http_server = false;
 
-    public function __construct($ip='0.0.0.0', $port=1215){
+    public function __construct($ip='0.0.0.0', $port=1215,$set=array()){
         $this->init();
         $this->parseCommand();
         $this->http_server = new \swoole_http_server($ip,$port);
 	$this->set['log_file'] = $this->logFile;
+	if ( empty($set) ){
+	    $set["enable_reuse_port"] = true;
+	}
+	$this->set = array_merge($this->set,$set); 
         $this->http_server->set($this->set);
         $this->http_server->on('start', array($this, 'onMasterStart'));
 	$this->http_server->on('shutdown', array($this, 'onShutdown'));

@@ -39,13 +39,13 @@ class Controller{
 	global $config;
 	if ( $config["db"]["coroutine"] ){
             if (count($config["db"]["coroutine_pool"]) == 0) {
-                $db =  new \WebWorker\Libs\CoroutineMysql($config["db"]);
+                $db =  \WebWorker\Libs\Mmysqli::getInstance($config["db"]);
                 $config["db"]["coroutine_pool"]->push($db);
                 $config["db"]["coroutine_count"]++;
             }
             $this->db =  $config["db"]["coroutine_pool"]->pop();
         }else{
-            $this->db = new \WebWorker\Libs\Mmysqli($config['db']); 
+            $this->db = \WebWorker\Libs\Mmysqli::getInstance($config['db']); 
         }        
     }
 

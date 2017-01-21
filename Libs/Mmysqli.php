@@ -8,7 +8,29 @@ class Mmysqli{
     public $affected_rows = 0;
     public $insert_id = 0;
 
-    public function __construct($config=array()){
+    /**
+     * 静态成品变量 保存全局实例
+     */
+    private static  $_instance = array();
+
+    /**
+     * 静态工厂方法，返还此类的唯一实例
+     */
+    public static function getInstance($config=array()) {
+        if ( $config['coroutine'] ){
+	    return new \WebWorker\Libs\CoroutineMysql($config);
+        }else{
+	    unset($config["coroutine_pool"]);
+            $key = md5(implode(":",$config));
+	    if (!isset(self::$_instance[$key])) {
+		$c = __CLASS__;
+                self::$_instance[$key] = new $c($config);
+            }
+            return self::$_instance[$key];
+	}    
+    }
+
+    private function __construct($config=array()){
         $host = isset($config["host"]) ? $config["host"] : "127.0.0.1";
         $user = isset($config["user"]) ? $config["user"] : "root"; 
 	$password = isset($config["password"]) ? $config["password"] : "123456";

@@ -22,7 +22,7 @@ function autoload_dir($dir_arr){
 class App
 {
 
-    const VERSION = '0.1.6';
+    const VERSION = '0.1.7';
 
     private $map = array();
 

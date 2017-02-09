@@ -2,7 +2,7 @@
 namespace WebWorker;
 
 if ( extension_loaded("swoole") ){
-    if ( version_compare(SWOOLE_VERSION,'2.0.5') ){
+    if ( version_compare(SWOOLE_VERSION,'2.0.5') == -1 ){
         exit("swoole扩展版本必须大于等于2.0.5\n");
     }
 }else{

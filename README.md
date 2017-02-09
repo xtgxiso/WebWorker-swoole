@@ -24,6 +24,23 @@ WebWorker-swoole
 composer require xtgxiso/webworker-swoole
 ```
 
+直接使用
+========
+
+```
+git clone git@github.com:xtgxiso/WebWorker-swoole.git
+
+//需要将代码包含require_once 'vendor/autoload.php'替换成如下内容
+require_once 'WebWorker-swoole/App.php';
+require_once 'WebWorker-swoole/Libs/Controller.php';
+require_once 'WebWorker-swoole/Libs/CoroutineMysql.php';
+require_once 'WebWorker-swoole/Libs/Mmysqli.php';
+require_once 'WebWorker-swoole/Libs/Mredis.php';
+
+```
+
+
+
 快速开始
 ======
 demo.php
